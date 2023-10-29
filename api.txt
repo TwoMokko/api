@@ -1,0 +1,206 @@
+openapi: 3.0.3
+info:
+  title: API для записной книжки
+  version: v1
+servers:
+  - url: https://localhost:8080/api/v1/
+    description: Dev server
+paths:
+  /notebook:
+    get:
+      tags:
+        - Notebook
+      summary: Метод получения записной книжки
+      operationId: getNotebook
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resp"
+        '404':
+          description: Not found
+    post:
+      tags:
+        - Notebook
+      summary: Добавление новой записи
+      description: Добавление новой записи
+      operationId: addNotebook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteForPOST'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteId'
+        '400':
+          description: Bad Request
+  /notebook/{id}:
+    get:
+      tags:
+        - Notebook
+      summary: Метод получения записи из записной книжки по идентефикатору
+      operationId: getNotebookById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор записи
+          schema:
+            type: integer
+          example: 10
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+        '404':
+          description: Not found
+    post:
+      tags:
+        - Notebook
+      summary: Изменение записи по идентефикатору
+      description: Изменение записи по идентефикатору
+      operationId: updateNotebookById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор записи
+          schema:
+            type: integer
+          example: 10
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteForPOST'
+        required: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteId'
+        '400':
+          description: Bad Request
+    delete:
+      tags:
+        - Notebook
+      summary: Метод удаления записи из записной книжки по идентефикатору
+      operationId: deleteNotebookById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор записи
+          schema:
+            type: integer
+          example: 10
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteId"
+        '400':
+          description: Bad Request
+components:
+  schemas:
+      Count:
+        type: integer
+        format: int
+        example: 124
+      NoteId:
+        type: object
+        properties:
+          id:
+            type: integer
+            format: int
+            example: 10
+      NoteForPOST:
+        type: object
+        required:
+          - name
+          - phone
+          - email
+        properties:
+          name:
+            type: string
+            format: varchar(50)
+            example: Иванов Иван Иванович
+          company:
+            type: string
+            format: varchar(50)
+            example: intech
+          phone:
+            type: string
+            format: varchar(20)
+          email:
+            type: string
+            format: varchar(50)
+            example: abc@gmail.com
+          birthday:
+            type: string
+            format: date
+            example: 1980-10-24
+          photo:
+            type: string
+            format: varchar(50)
+            example: photo.jpeg
+      Note:
+        type: object
+        required:
+          - name
+          - phone
+          - email
+        properties:
+          id:
+            type: string
+            format: varchar(10)
+            example: 10
+          name:
+            type: string
+            format: varchar(50)
+            example: Иванов Иван Иванович
+          company:
+            type: string
+            format: varchar(50)
+            example: intech
+          phone:
+            type: string
+            format: varchar(20)
+          email:
+            type: string
+            format: varchar(50)
+            example: abc@gmail.com
+          birthday:
+            type: string
+            format: date
+            example: 1980-10-24
+          photo:
+            type: string
+            format: varchar(50)
+            example: photo.jpeg
+      Notebook:
+        type: array
+        items:
+          $ref: '#/components/schemas/Note'
+      Resp:
+        type: object
+        properties:
+          count:
+            $ref: '#/components/schemas/Count'
+          list:
+            $ref: '#/components/schemas/Notebook'
